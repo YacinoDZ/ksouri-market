@@ -2,8 +2,10 @@ const express =require("express");
 
 const adminRouter = express.Router();
 const admin = require("../middlewares/admin");
-const  {Product} = require("../models/product");
 const  Order = require("../models/order");
+const  Category = require("../models/category");
+const  {Product} = require("../models/product");
+
 
 //add product
 
@@ -144,6 +146,92 @@ async function fetchCategoryWiseProduct(category) {
     return earnings;
   }
 
+
+  ////From here me
+
+
+  adminRouter.post("/admin/add-category", admin, async(req,res)=>{
+    try{
+        const {name, description, images,priority}=req.body;
+
+        let category = new Category({
+            name,
+            description,
+            images,
+            priority,
+        });
+
+        category = await category.save();
+
+
+        res.json(category);
+
+    }catch(e){
+
+        res.status(500).json({error: e.message});
+    }
+});
+
+
+adminRouter.get('/admin/get-categories', admin, async(req,res) => {
+
+  try{
+      const categories = await Category.find({});//, { sort: 'priority' });
+      res.json(categories);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+function compare(key, order = 'asc') {
+  return function (a, b) {
+      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) 
+    return 0;
+  
+const first = (a[key].toLowerCase() in sortingOrder) ? sortingOrder[a[key]] : Number.MAX_SAFE_INTEGER;
+const second = (b[key].toLowerCase() in sortingOrder) ? sortingOrder[b[key]] : Number.MAX_SAFE_INTEGER;
+  
+let result = 0;
+if (first < second) 
+    result = -1;
+else if (first > second) 
+    result = 1;
+return (order === 'desc') ? ~result : result
+  };
+}
+
+
+
+adminRouter.post('/admin/delete-category', admin, async(req,res)=>{
+  try{
+      const {id} = req.body;
+      let category = await Category.findByIdAndDelete(id);
+      
+      res.json(category);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+
+adminRouter.get('/admin/post-products_screen', admin, async(req,res) => {
+
+  try{
+      const products = await Product.find({});
+      res.json(products);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
 
 
 

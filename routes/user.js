@@ -4,7 +4,7 @@ const auth = require("../middlewares/auth");
 const Order = require("../models/order");
 const { Product } = require("../models/product");
 const User = require("../models/user");
-
+const  Category = require("../models/category");
 
 
 
@@ -122,6 +122,22 @@ userRouter.get("/api/orders/me", auth, async (req, res) => {
     res.json(orders);
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+
+//Get all your products
+
+userRouter.get('/api/get-categories', auth, async(req,res) => {
+
+  try{
+      const categories = await Category.find({});
+      res.json(categories);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
   }
 });
 
