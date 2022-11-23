@@ -82,6 +82,20 @@ adminRouter.get('/admin/get-orders', admin, async(req,res) => {
 });
 
 
+adminRouter.get('/admin/get-orders', admin, async(req,res) => {
+
+  try{
+      const orders = await Order.find({});
+      res.json(orders);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+
 
 adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
     try {
@@ -211,6 +225,21 @@ adminRouter.post('/admin/delete-category', admin, async(req,res)=>{
       let category = await Category.findByIdAndDelete(id);
       
       res.json(category);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+
+adminRouter.post('/admin/delete-order', admin, async(req,res)=>{
+  try{
+      const {id} = req.body;
+      let order = await Order.findByIdAndDelete(id);
+      
+      res.json(order);
 
   }catch(e){
 

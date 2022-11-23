@@ -126,7 +126,7 @@ userRouter.get("/api/orders/me", auth, async (req, res) => {
 });
 
 
-//Get all your products
+//Get all categories
 
 userRouter.get('/api/get-categories', auth, async(req,res) => {
 
