@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { productSchema } = require("./product");
+const {brandSchema } = require("./brand");
 
 const categorySchema = mongoose.Schema({
 
@@ -23,9 +23,9 @@ const categorySchema = mongoose.Schema({
         trim:true,
     },
 
-    products: [
+    brands: [
         {
-        product: productSchema,
+        brand: brandSchema,
         },
     ],
 

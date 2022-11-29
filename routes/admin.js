@@ -4,14 +4,81 @@ const adminRouter = express.Router();
 const admin = require("../middlewares/admin");
 const  Order = require("../models/order");
 const  Category = require("../models/category");
+const  {Brand} = require("../models/brand");
 const  {Product} = require("../models/product");
 
+
+//Brands
+//add brand
+
+adminRouter.post("/admin/add-brand", admin, async(req,res)=>{
+  try{
+      const {name, description, images, category}=req.body;
+
+      let brand = new Brand({
+          name,
+          description,
+          images,
+          category,
+      });
+
+      brand = await brand.save();
+
+      res.json(brand);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+
+});
+
+
+//Get all your brands
+
+adminRouter.get('/admin/get-brands', admin, async(req,res) => {
+
+  try{
+      const brands = await Brand.find({});
+      res.json(brands);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+//Delete the brand
+
+adminRouter.post('/admin/delete-brand', admin, async(req,res)=>{
+  try{
+      const {id} = req.body;
+      let brand = await Brand.findByIdAndDelete(id);
+      
+      res.json(brand);
+
+  }catch(e){
+
+      res.status(500).json({error: e.message});
+
+  }
+});
+
+
+
+
+
+
+//Products
 
 //add product
 
 adminRouter.post("/admin/add-product", admin, async(req,res)=>{
     try{
-        const {name, description, images,quantity,price, category}=req.body;
+        const {name, description, images,quantity,price, category, brand,
+          purchasePrice,addedAt,expiresAt}=req.body;
 
         let product = new Product({
             name,
@@ -19,7 +86,11 @@ adminRouter.post("/admin/add-product", admin, async(req,res)=>{
             images,
             quantity,
             price,
+            purchasePrice,
+            addedAt,
+            expiresAt,
             category,
+            brand,
         });
 
         product = await product.save();
@@ -113,6 +184,7 @@ adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
 adminRouter.get("/admin/analytics", admin, async (req, res) => {
     try {
       const orders = await Order.find({});
+      const categories = await Category.find({});
       let totalEarnings = 0;
   
       for (let i = 0; i < orders.length; i++) {
@@ -122,7 +194,35 @@ adminRouter.get("/admin/analytics", admin, async (req, res) => {
         }
       }
       // CATEGORY WISE ORDER FETCHING
+      let map = {};//new Map();
+      let key='totalEarnings';
+      map[key] = map[key] || [];
+      map[key].push(totalEarnings);
+      
+      /*mappping.set("totalEarnings",totalEarnings);
+      for (let i = 0; i < categories.length; i++) {
+
+        let value = await fetchCategoryWiseProduct(categories[i].name);
+        mappping.set(categories[i].name,value);
+      
+      }
+
+      const arr = Array.from(mappping);
+
+      */
+      for (let i = 0; i < categories.length; i++) {
+
+        let value = await fetchCategoryWiseProduct(categories[i].name);
+        let key=categories[i].name;
+        map[key] = map[key] || [];
+        map[key].push(value);
+        console.log(key);
+        console.log(value);
+      
+      }
+      //console.log(mappping);
       let mobileEarnings = await fetchCategoryWiseProduct("Téléphone");
+      
       let essentialEarnings = await fetchCategoryWiseProduct("Basique");
       let applianceEarnings = await fetchCategoryWiseProduct("Élec.ménager");
       let booksEarnings = await fetchCategoryWiseProduct("Livres");
@@ -137,7 +237,7 @@ adminRouter.get("/admin/analytics", admin, async (req, res) => {
         fashionEarnings,
       };
   
-      res.json(earnings);
+      res.json(map);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

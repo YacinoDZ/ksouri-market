@@ -35,7 +35,29 @@ const productSchema = mongoose.Schema({
         required: true,
     },
 
+    purchasePrice:{
+        type: Number,
+        required: true,
+    },
+
+    addedAt: {
+        type: Number,
+        required: true,
+    },
+
+    expiresAt: {
+        type: Number,
+        required: true,
+    },
+
     category:{
+        type: String,
+        required: true,
+    },
+
+
+
+    brand:{
         type: String,
         required: true,
     },
