@@ -50,6 +50,13 @@ const productSchema = mongoose.Schema({
         required: true,
     },
 
+    qrCode: {
+        type: Number,
+        required: true,
+    },
+
+    
+
     category:{
         type: String,
         required: true,
