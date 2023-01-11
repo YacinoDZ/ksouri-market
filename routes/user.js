@@ -131,7 +131,7 @@ userRouter.get("/api/orders/me", auth, async (req, res) => {
 userRouter.get('/api/get-categories', auth, async(req,res) => {
 
   try{
-      const categories = await Category.find({});
+      const categories = await Category.find({"priority": { $gt: -1 }});
       res.json(categories);
 
   }catch(e){
